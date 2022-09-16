@@ -26,6 +26,8 @@ def Server():
         json.dump(Data,file, indent = 4, sort_keys = False)
         file.close()
         return jsonify(Data)
+    else:
+        return "Servers"
 
 @app.route("/ServersInfo",methods=["GET","POST"])
 def ServersInfo():
@@ -50,6 +52,8 @@ def ServersInfo():
         }
 
         return jsonify(TempData)
+    else:
+        return "ServersInfo"
 
 if __name__ == "__main__":
     app.run(debug=True)
