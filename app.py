@@ -1,3 +1,5 @@
+from ast import Return
+from errno import ESTALE
 from os import name
 from flask import Flask,request,jsonify
 import json
@@ -9,11 +11,26 @@ TempData = {}
 
 Data = json.load(open('ServerList.json', 'r'))
 
-@app.route("/Servers",methods=["GET","POST"])
+
+
+
+@app.route("/Servers",methods=["GET","POST","DELETE"])
 def Server():
     if request.method == "GET":
         return json.load(open('ServerList.json', 'r'))
     elif request.method == "POST":
+
+        Remove = request.form["Remove"]
+        if Remove == "True":
+            ServerName = request.form["ServerName"]
+            #ServerIp = request.form["ServerIp"]
+            #ServerPort = request.form["ServerPort"]
+            Data = json.load(open('ServerList.json', 'r'))
+            Data.pop(ServerName)
+            file = open('ServerList.json', "w")
+            json.dump(Data,file, indent = 4, sort_keys = False)
+            return jsonify(Data)
+
         ServerName = request.form["ServerName"]
         ServerIp = request.form["ServerIp"]
         ServerPort = request.form["ServerPort"]
@@ -26,6 +43,7 @@ def Server():
         json.dump(Data,file, indent = 4, sort_keys = False)
         file.close()
         return jsonify(Data)
+
     else:
         return "Servers"
 
@@ -34,6 +52,15 @@ def ServersInfo():
     if request.method == "GET":
         return jsonify(TempData)
     elif request.method == "POST":
+        Remove = request.form["Remove"]
+        if Remove == "True":
+            ServerName = request.form["ServerName"]
+            #ServerIp = request.form["ServerIp"]
+            #ServerPort = request.form["ServerPort"]
+            TempData.pop(ServerName)
+
+            return jsonify(TempData)
+
         ServerID = request.form["ServerID"]
         PlayerAmount = request.form["PlayerAmount"]
 
@@ -51,9 +78,14 @@ def ServersInfo():
             }
         }
 
+
+
         return jsonify(TempData)
     else:
         return "ServersInfo"
+
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)
